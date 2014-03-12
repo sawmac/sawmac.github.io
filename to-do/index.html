@@ -1,0 +1,103 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>My To-Do List</title>
+<link href="_css/todo.css" rel="stylesheet">
+<link href="_css/ui-lightness/jquery-ui.min.css" rel="stylesheet">
+<script src="_js/jquery.min.js"></script>
+<script src="_js/jquery-ui.min.js"></script>
+<script>
+$(document).ready(function(e) {
+  $('#due-date').datepicker();
+  $('#add-todo').button({
+	  icons: {
+        primary: "ui-icon-circle-plus"
+	  }
+  }).click(function() {
+	  $('#new-todo').dialog('open');
+  }); // end click
+  $('#new-todo').dialog({
+	width: 350,
+	height: 300,
+	modal: true,
+	autoOpen: false,
+	close: function() {
+        $('#new-todo input').val(''); /*clear fields*/
+      },
+	buttons : {
+		"Add task" : function() {
+			var taskName = $('#task').val();
+			var dueDate = $('#due-date').val();
+			var beginLi = '<li><span class="done">%</span><span class="delete">x</span>';
+			var taskLi = '<span class="task">' + taskName + '</span>';
+			var dateLi = '<span class="due-date">' + dueDate + '</span>';
+			var endLi = '</li>';
+			$('#todo-list').prepend(beginLi + taskLi + dateLi + endLi);
+			$('#todo-list').hide().slideDown(250).find('li:first')
+			  		.animate({
+				  'background-color': 'rgb(255,255,204)'
+			  },250)
+			 		.animate({
+				  'background-color': 'white'
+			  },750).animate; // end animate
+			$(this).dialog('close');
+		},
+		"Cancel" : function() {
+			$(this).dialog('close');
+		}
+	}
+  }); // end dialog
+  
+  // need to delegate to make make click apply
+	// to newly added items
+	$('#todo-list').on('click','.done',function(e) {
+		var $taskItem = $(this).parent("li");
+		var $copy = $taskItem.clone();
+		$('#completed-list').prepend($copy);
+		$copy.hide().slideDown();	
+		$taskItem.remove();
+	}
+	); // end on
+  
+  $('#todo-list, #completed-list').on('click','.delete',function(e) {
+		$(this).parent("li").slideUp(250, function() {
+			$(this).remove();
+		}); // end slideup
+	}); // end on
+  
+  $('#todo-list').sortable();
+  
+}); // end ready
+</script>
+
+</head>
+
+<body>
+<div class="container">
+<div id="to-do">
+<h1>My To-do List</h1>
+<button id="add-todo">Add a todo item</button>
+<ul id="todo-list">
+</ul>
+</div>
+<div id="completed">
+<h2>Completed Tasks</h2>
+<ul id="completed-list">
+</ul>
+</div>
+<div id="new-todo" title="Add to-do item">
+<form>
+	<p>
+		<label for="task">Task Name:</label>
+		<input type="text" name="task" id="task">
+	</p>
+	<p>
+		<label for="due-date">Due Date:</label>
+		<input type="text" name="due-date" id="due-date">
+	</p>
+</form>
+</div>
+</div>
+</body>
+</html>
